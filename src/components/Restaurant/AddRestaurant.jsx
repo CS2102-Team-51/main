@@ -6,36 +6,28 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import {FormControlLabel} from '@material-ui/core';
-// import ScheduleSelector from 'react-schedule-selector';
+import UploadContainer from './upload/UploadContainer';
+import ImageUploader from 'react-images-upload';
 
 import * as apiRoute from '../Api/route.js';
 import Axios from 'axios';
 
-export default class RiderRegisterForm extends Component {
+export default class AddRestaurant extends Component {
   constructor () {
     super ();
     this.state = {
-      //schedule: [],
       setOpen: false,
       name: '',
-      username: '',
-      password: '',
-      type: '',
+      address: '',
+      minCost: '',
+      image: '',
     };
 
-    //this._handleChange = this._handleChange.bind(this);
+    this.onDrop = this.onDrop.bind (this);
     this._handleClickOpen = this._handleClickOpen.bind (this);
     this._handleClose = this._handleClose.bind (this);
-    this._handleRegister = this._handleRegister.bind (this);
     this._handleSubmit = this._handleSubmit.bind (this);
   }
-
-  // _handleChange = newSchedule => {
-  //     this.setState({ schedule: newSchedule })
-  // }
 
   _handleClickOpen = () => {
     this.setState ({setOpen: true});
@@ -46,17 +38,13 @@ export default class RiderRegisterForm extends Component {
   };
 
   _handleSubmit = () => {
-    // Send POST req using FETCH API
-  };
-
-  _handleRegister = () => {
-    let user = {
+    let restaurant = {
       rname: this.state.name,
-      rusername: this.state.username,
-      rpassword: this.state.password,
-      type: this.state.type,
+      raddress: this.state.address,
+      rminCost: this.state.minCost,
+      rimage: this.state.image,
     };
-    Axios.post (apiRoute.RIDER_API, user, {
+    Axios.post (apiRoute.RESTAURANT_API, restaurant, {
       withCredentials: false,
     })
       .then (response => {
@@ -64,9 +52,9 @@ export default class RiderRegisterForm extends Component {
         this.setState ({
           setOpen: false,
           name: '',
-          username: '',
-          password: '',
-          type: '',
+          address: '',
+          minCost: '',
+          image: '',
         });
       })
       .catch (error => {
@@ -80,23 +68,44 @@ export default class RiderRegisterForm extends Component {
     });
   }
 
-  updateUsername (event) {
+  updateAddress (event) {
     this.setState ({
-      username: event.target.value,
+      address: event.target.value,
     });
   }
 
-  updatePassword (event) {
+  updateMinCost (event) {
     this.setState ({
-      password: event.target.value,
+      minCost: event.target.value,
     });
   }
 
-  updateType (event) {
-    console.log ('This is my type: ', event.target.value);
+  updateImage (event) {
     this.setState ({
-      type: event.target.value,
+      image: event.target.value,
     });
+  }
+
+  onDrop (picture) {
+    console.log (picture);
+    const formData = new FormData ();
+    formData.append ('image', picture);
+    console.log ('This is my picture: ', formData);
+    Axios.post ('http://localhost:5000/api/restaurantPhoto', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      withCredentials: false,
+    })
+      .then (response => {
+        console.log (response);
+      })
+      .catch (error => {
+        console.log (error);
+      });
+    // this.setState ({
+    //   pictures: this.state.pictures.concat (picture),
+    // });
   }
 
   render () {
@@ -107,20 +116,19 @@ export default class RiderRegisterForm extends Component {
           color="primary"
           onClick={this._handleClickOpen}
         >
-          Register (Rider)
+          Register (Customer)
         </Button>
         <Dialog
           open={this.state.setOpen}
           onClose={this._handleClose}
           aria-labelledby="form-dialog-title"
-          maxWidth="xl"
         >
           <DialogTitle id="form-dialog-title">
-            Register as a rider for tapao!
+            Register as a tapao-er!
           </DialogTitle>
           <DialogContent>
             <DialogContentText>
-              You're one step away from bringing happiness (and food) to thousands of others!
+              You're one step away from enjoying the convenience of food right at your doorstep!
             </DialogContentText>
             <TextField
               autoFocus
@@ -128,71 +136,49 @@ export default class RiderRegisterForm extends Component {
               value={this.state.name}
               onChange={e => this.updateName (e)}
               id="fullname"
-              label="Full Name"
+              label="Restaurant Name"
               variant="outlined"
               required
               fullWidth
             />
             <TextField
               margin="dense"
-              value={this.state.username}
-              onChange={e => this.updateUsername (e)}
+              value={this.state.address}
+              onChange={e => this.updateAddress (e)}
               id="username"
-              label="Username"
+              label="Address"
               variant="outlined"
               required
               fullWidth
             />
             <TextField
               margin="dense"
-              value={this.state.password}
-              onChange={e => this.updatePassword (e)}
+              value={this.state.minCost}
+              onChange={e => this.updateMinCost (e)}
               id="password"
               label="Password"
-              type="password"
+              type="number"
+              min="0"
               variant="outlined"
               required
               fullWidth
             />
-            <RadioGroup
-              row
-              value={this.state.type}
-              onChange={e => this.updateType (e)}
-            >
-              <FormControlLabel
-                value="full_time"
-                control={<Radio required />}
-                label="Full Time"
-              />
-              <FormControlLabel
-                value="part_time"
-                control={<Radio />}
-                label="Part Time"
-              />
-            </RadioGroup>
-
-            {/*{ <ScheduleSelector
-                    selection={this.state.schedule}
-                    startDate={new Date('2020-03-22T00:00:00')} // Start on Sunday
-                    dateFormat = {'ddd'}
-                    numDays={7}
-                    minTime={10}
-                    maxTime={22}
-                    selectionScheme={'linear'}
-                    onChange={this._handleChange}
-                    margin={2}
-                /> */}
+            <ImageUploader
+              withIcon={true}
+              buttonText="Choose images"
+              onChange={this.onDrop}
+              imgExtension={['.jpg', '.gif', '.png', '.gif']}
+              maxFileSize={5242880}
+              singleImage={true}
+            />
+            <UploadContainer />
           </DialogContent>
           <DialogActions>
             <Button onClick={this._handleClose} color="primary">
               Cancel
             </Button>
-            <Button
-              type="submit"
-              color="primary"
-              onClick={this._handleRegister}
-            >
-              Register
+            <Button onClick={this._handleSubmit} color="primary">
+              Add Restaurant
             </Button>
           </DialogActions>
         </Dialog>

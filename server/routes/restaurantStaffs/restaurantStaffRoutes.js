@@ -23,49 +23,19 @@ router.route ('/api/restaurantStaffs').get (async (req, res) => {
 });
 
 //Post a rsstaurantStaff
-router.route ('/api/restaurantStaff').post ((req, res) => {
-  console.log ('ran');
-  const rsname = req.body.rsname;
-  const rsposition = req.body.rsposition;
-  const rsusername = req.body.rsusername;
-  const rspassword = req.body.rspassword;
-  const rid = req.body.rid;
-
+router.route ('/api/staff').post (async (req, res) => {
   console.log (req.body);
 
-  pool
-    .query (
-      `INSERT INTO Restaurant_Staff (rsname, rsposition, rsusername, rspassword, rid) 
-      VALUES('${rsname}', '${rsposition}', '${rsusername}', '${rspassword}', ${rid});`
-    )
-    .then (res.status (201).json ())
-    .catch (err => res.status (400).json ('Error' + err));
-});
-
-//Login
-// router.route ('/api/restaurantStaff/login').post ((req, res) => {
-//   const queryString = `SELECT rs FROM Restaurant_Staff WHERE rsusername = '${req.body.rsusername}' AND rspassword = '${req.body.rspassword}'`;
-
-//   const result = pool.query (queryString);
-//   res.setHeader ('content-type', 'application/json');
-//   if (result) {
-//     res.send (JSON.stringify (result.rows[0]));
-//     return res.status (200).json ();
-//   } else {
-//     return res.status (404).json ('Invalid login credentials');
-//   }
-// });
-router.route ('/api/restaurantStaff/login').post ((req, res) => {
-  console.log ('Request', req.body);
-
-  let result = pool.query (
-    `SELECT rs FROM Restaurant_Staff WHERE rsusername = '${req.body.rsusername}' AND rspassword = '${req.body.rspassword}'`
-  );
-  if (result) {
-    res.send (JSON.stringify (result.rows[0]));
-    return res.status (200).json ();
-  } else {
-    return res.status (404).json ('Invalid login credentials');
+  try {
+    await pool.query (
+      `INSERT INTO Restaurant_Staff (rsname, rsposition, rsusername, rspassword) 
+      VALUES('${req.body.rsname}', ${req.body.rsposition}, '${req.body.rsusername}',
+         '${req.body.rspassword}');`
+    );
+    return res.status (201).json ();
+  } catch (err) {
+    console.log (err);
+    return res.status (404).json ('Error' + err);
   }
 });
 

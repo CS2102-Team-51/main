@@ -1,15 +1,99 @@
-import React, { Component } from 'react';
-import ManagerNavBar from './navbar.jsx';
+//import React, { Component } from 'react';
+import React from 'react';
+import {makeStyles} from '@material-ui/core/styles';
+import Drawer from '@material-ui/core/Drawer';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import List from '@material-ui/core/List';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import MailIcon from '@material-ui/icons/Mail';
+import banner from '../../images/food.jpeg';
+import ProfileIcon from '@material-ui/icons/AccountCircle';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
+import LogoutIcon from '@material-ui/icons/ExitToApp';
 
-export class ManagerPage extends Component {
-    render() {
-        return (
-            <div>
-                <ManagerNavBar/>
-                Manager Page
-            </div>
-        );
-    }
+import {Link as RouterLink, useParams} from 'react-router-dom';
+import AddRestaurant from '../../components/Restaurant/AddRestaurant';
+
+const drawerWidth = 240;
+// const samplePoints = 999;
+
+const useStyles = makeStyles (theme => ({
+  root: {
+    display: 'flex',
+  },
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0,
+  },
+  drawerPaper: {
+    width: drawerWidth,
+  },
+}));
+
+export default function Manager (props) {
+  const classes = useStyles ();
+  let {id} = useParams ();
+
+  return (
+    <div className={classes.root}>
+      <CssBaseline />
+      <Drawer
+        className={classes.drawer}
+        variant="permanent"
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+        anchor="left"
+      >
+        <div className={classes.toolbar} />
+        <Divider />
+        <List>
+          <ListItem button key="Profile">
+            <ListItemIcon><ProfileIcon /></ListItemIcon>
+            <ListItemText primary="Profile" />
+          </ListItem>
+          <ListItem button key="Vouchers">
+            <ListItemIcon><MailIcon /></ListItemIcon>
+            <ListItemText primary="Vouchers" />
+          </ListItem>
+        </List>
+        <Divider />
+        <List>
+          <ListItem key="Reward_Points">
+            <ListItemIcon><MonetizationOnIcon /></ListItemIcon>
+            <ListItemText primary="Points" />
+          </ListItem>
+          <ListItem
+            button
+            key="Logout"
+            component={RouterLink}
+            to="/"
+            onClick={props.unauthenticate}
+          >
+            <ListItemIcon><LogoutIcon /></ListItemIcon>
+            <ListItemText primary="Logout" />
+          </ListItem>
+        </List>
+      </Drawer>
+      <main className={classes.content}>
+        <div className={classes.toolbar} />
+        <img className="banner" src={banner} alt="banner" />
+        <div className="mainContent">
+          <Typography variant="h2">
+            Hungry?
+          </Typography>
+          {/* Search Bar */}
+
+          {/* Card List */}
+          <AddRestaurant/>
+        </div>
+      </main>
+    </div>
+  );
 }
-
-export default ManagerPage

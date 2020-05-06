@@ -17,7 +17,7 @@ router.route ('/api/customers').get (async (req, res) => {
   res.send (JSON.stringify (result.rows[0]));
 });
 
-//Post an customer
+//Create a user
 router.route ('/api/customer').post (async (req, res) => {
 
   console.log (req.body);

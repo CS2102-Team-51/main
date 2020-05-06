@@ -36,13 +36,13 @@ export default class UserRegisterForm extends Component {
   };
 
   _handleRegister = () => {
-    let joinTime = moment(new Date()).format('YYYY-MM-DD hh:mm:ss');
+    let joinTime = moment (new Date ()).format ('YYYY-MM-DD hh:mm:ss');
     console.log ('This is my joinTime: ', joinTime);
     let user = {
       cname: this.state.fullName,
       cusername: this.state.username,
       cpassword: this.state.password,
-      ccontact_number: parseInt(this.state.contactNumber),
+      ccontact_number: parseInt (this.state.contactNumber),
       cjoin_time: joinTime,
       crewards_points: 1,
     };
@@ -51,11 +51,17 @@ export default class UserRegisterForm extends Component {
     })
       .then (response => {
         console.log (response);
+        this.setState ({
+          setOpen: false,
+          fullName: '',
+          username: '',
+          password: '',
+          contactNumber: '',
+        });
       })
       .catch (error => {
         console.log (error);
       });
-    this.setState ({setOpen: false});
   };
 
   updateFullName (event) {

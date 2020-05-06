@@ -1,3 +1,15 @@
+const multer = require ('multer');
+
+const storage = multer.diskStorage ({
+  destination: function (req, file, cb) {
+    cb (null, 'assets/uploads');
+  },
+  filename: function (req, file, cb) {
+    cb (null, file.originalname);
+  },
+});
+
+var upload = multer ({storage: storage});
 const router = require ('express').Router ();
 const pool = require ('../../config/pool');
 
@@ -24,16 +36,16 @@ router.route ('/api/restaurants').get (async (req, res) => {
 
 //Post a restaurant
 router.route ('/api/restaurant').post ((req, res) => {
-    console.log('ran');
+  console.log ('ran');
   const rname = req.body.rname;
   const raddress = req.body.raddress;
   const rmincost = req.body.rmincost;
   const rimage = req.body.rimage;
 
-  console.log(rname);
-  console.log(raddress);
-  console.log(rmincost);
-  console.log(rimage);
+  console.log (rname);
+  console.log (raddress);
+  console.log (rmincost);
+  console.log (rimage);
 
   pool
     .query (
@@ -42,6 +54,14 @@ router.route ('/api/restaurant').post ((req, res) => {
     )
     .then (res.status (201).json ())
     .catch (err => res.status (400).json ('Error' + err));
+});
+
+router.post("/api/restaurantPhoto", upload.single('image'), (req, res) => {
+  console.log("I am in here, restaurant photos!");
+  console.log(req.body);
+  // return res.json({
+  //     image: req.file.path
+  // });
 });
 
 module.exports = router;
