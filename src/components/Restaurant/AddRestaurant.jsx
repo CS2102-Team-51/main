@@ -44,7 +44,7 @@ export default class AddRestaurant extends Component {
       rminCost: this.state.minCost,
       rimage: this.state.image,
     };
-    Axios.post (apiRoute.RESTAURANT_API, restaurant, {
+    Axios.post (apiRoute.GET_RESTAURANT_API, restaurant, {
       withCredentials: false,
     })
       .then (response => {
